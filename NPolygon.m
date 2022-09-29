@@ -4,18 +4,18 @@ classdef NPolygon < handle
     
     properties
         vertices (2,:) double
-        edges
+        edges (1,:) Edge
         pos (2,1) double
     end
     
     methods
-        function obj = NPolygon(pos,N)
+        function obj = NPolygon(N,pos)
             %NPolygon Construct an instance of this class
             %   Creates a polygon with the specified number of vertices and
             %   eges
             arguments
-                pos (2,1) double = [0;0]
                 N (1,1) double {mustBeGreaterThan(N,2)} = 3
+                pos (2,1) double = [0;0]
             end
             obj.pos = pos;
             angleStep = 2*pi/N;
@@ -23,6 +23,9 @@ classdef NPolygon < handle
                 vertexAngle = (i-1)*angleStep + rand()*angleStep;
                 vertexMag = rand();
                 obj.vertices(:,i) = pos + [cos(vertexAngle) -sin(vertexAngle); sin(vertexAngle) cos(vertexAngle)]*[vertexMag;0];
+            end
+            for i = 1:N
+                obj.edges(1,i) = Edge(obj.vertices(:,i),obj.vertices(:,mod(i,4)+1));
             end
         end
         
