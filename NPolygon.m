@@ -25,21 +25,32 @@ classdef NPolygon < handle
                 obj.vertices(:,i) = pos + [cos(vertexAngle) -sin(vertexAngle); sin(vertexAngle) cos(vertexAngle)]*[vertexMag;0];
             end
             for i = 1:N
-                obj.edges(1,i) = Edge(obj.vertices(:,i),obj.vertices(:,mod(i,4)+1));
+                obj.edges(1,i) = Edge(obj.vertices(:,i),obj.vertices(:,mod(i,N)+1));
             end
         end
         
-        function p = plotPolygon(obj)
+        function plotPolygon(obj)
             %plotPolygon Plots the Polygon
             %   Detailed explanation goes here
-            gca
-            hold on
-            polyVertices = [obj.vertices obj.vertices(:,1)];
-            p = plot(polyVertices(1,:), polyVertices(2,:),'-.');
-            grid on
-            axis equal
-            hold off
+            gca;
+            hold on;
+            for i = 1:length(obj.edges)
+                obj.markEdge(i)
+            end
+            grid on;
+            axis equal;
+            hold off;
         end
+        
+        function markEdge(obj,index,options)
+            arguments
+                obj
+                index (1,1) double {mustBeInteger}
+                options.color (3,1) double = [1;0;0]
+            end
+            obj.edges(index).plot('Color',options.color)
+        end
+        
     end
 end
 

@@ -14,6 +14,18 @@ classdef Edge
             obj.vertex1 = vertex1;
             obj.vertex2 = vertex2;
         end
+        
+        function plot(obj,options)
+            arguments
+                obj
+                options.LineWidth (1,1) double = 1.5
+                options.color (3,1) double = [1;0;0]
+            end
+            gca;
+            x = [obj.vertex1(1);obj.vertex2(1)];
+            y = [obj.vertex1(2);obj.vertex2(2)];
+            plot(x,y,'LineWidth',options.LineWidth, 'Color',options.color);
+        end
     end
 end
 
