@@ -22,9 +22,11 @@ classdef Edge
                 options.color (3,1) double = [1;0;0]
             end
             gca;
+            hold on;
             x = [obj.vertex1(1);obj.vertex2(1)];
             y = [obj.vertex1(2);obj.vertex2(2)];
             plot(x,y,'LineWidth',options.LineWidth, 'Color',options.color);
+            hold off;
         end
     end
 end

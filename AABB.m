@@ -76,9 +76,11 @@ classdef AABB < handle
             end
             if options.layer == 1  
                 gca;
+                hold on;
                 points = [obj.lw, [obj.lw(1);obj.hw(2)], obj.hw, [obj.hw(1);obj.lw(2)], obj.lw];
                 plot(points(1,:), points(2,:),'LineWidth',options.LineWidth,...
                     'Color', options.color,'LineStyle','--');
+                hold off;
             else
                 if ~isempty(obj.children)
                     obj.children(1).plotBox('LineWidth', options.LineWidth,'layer',options.layer-1)
