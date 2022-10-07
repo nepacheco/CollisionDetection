@@ -5,31 +5,35 @@ classdef AABB < handle
     properties
         children = []
         parent (1,1)
-        lw (2,1) double
-        hw (2,1) double 
+        l (2,1) double
+        h (2,1) double 
         edges (1,:) 
     end
     
     methods
-        function obj = AABB(edges,parent)
+        function obj = AABB(edges,parent,makeTree)
             arguments
                 edges (1,:) Edge
                 parent = 0
+                makeTree (1,1) bool = True
             end
             %AABB Construct an instance of this class
             %   Detailed explanation goes here
             obj.edges = edges;
             obj.parent = parent;
-            obj.lw = min(edges(1).vertex1,edges(1).vertex2);
-            obj.hw = max(edges(1).vertex1,edges(1).vertex2);
+            obj.l = min(edges(1).vertex1,edges(1).vertex2);
+            obj.h = max(edges(1).vertex1,edges(1).vertex2);
             for i = 2:length(edges)
                 temp_lw = min(edges(i).vertex1,edges(i).vertex2);
                 temp_hw = max(edges(i).vertex1,edges(i).vertex2);
-                obj.lw = min(obj.lw,temp_lw);
-                obj.hw = max(obj.hw,temp_hw);
+                obj.l = min(obj.l,temp_lw);
+                obj.h = max(obj.h,temp_hw);
             end
-            obj.createChildren()
+            if makeTree
+                obj.createChildren()
+            end
         end
+        
         
         function createChildren(obj)
             if (obj.hw(2) - obj.lw(2)) > (obj.hw(1) - obj.lw(1)) % split along y

@@ -4,8 +4,8 @@ function [inCollision, edges] = AABBCollisionDetection(bvh1,bvh2)
     leaf1 = length(bvh1.edges) == 1; % The first BVH is a leaf
     leaf2 = length(bvh2.edges) == 1; % The second BVH is leaf
     if ~(leaf1 && leaf2) % at least one of the BVH is not a leaf
-        x_collision = (bvh1.lw(1) < bvh2.hw(1)) && (bvh2.lw(1) < bvh1.hw(1));
-        y_collision = (bvh1.lw(2) < bvh2.hw(2)) && (bvh2.lw(2) < bvh1.hw(2));
+        x_collision = (bvh1.l(1) < bvh2.h(1)) && (bvh2.l(1) < bvh1.h(1));
+        y_collision = (bvh1.l(2) < bvh2.h(2)) && (bvh2.l(2) < bvh1.h(2));
         if ~(x_collision && y_collision)
             return
         else
