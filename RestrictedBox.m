@@ -4,24 +4,24 @@ classdef RestrictedBox
     
     properties
         splitPlaneAxis
-        childDir
+        dir
         dist
         children
         edges
     end
     
     methods
-        function obj = RestrictedBox(splitPlaneAxis, childDir, dist, edges)
+        function obj = RestrictedBox(splitPlaneAxis, dir, dist, edges)
             arguments
                 splitPlaneAxis
-                childDir
+                dir
                 dist
                 edges
             end
             %RESTRICTEDBOX Construct an instance of this class
             %   Detailed explanation goes here
             obj.splitPlaneAxis = splitPlaneAxis;
-            obj.childDir = childDir;
+            obj.dir = dir;
             obj.dist = dist;
             obj.edges = edges;
              
@@ -42,57 +42,68 @@ classdef RestrictedBox
         end
         
         function children = makeChildren(edges,l,h)
+            % MAKECHILDREN - make children out of the current edges
             arguments
                 edges (1,:) Edge
-                l
-                h
+                l (2,1) double 
+                h (2,1) double 
             end 
             planes = [1 0; 0 1]; % x axis and y axis for splitting plane
             childrenDirection = [1 1;-1 -1; 1 -1];  % upper children; lower children; upper child and lower child
             minVolume = Inf;
-            splitPlane = [0 0];
+            splittingAxis = [0;0];
             childDir = [0 0];
             dist = [0,0];
             edgeList1 = [];
             edgeList2 = [];
-            for i = 1:2
-                axis = planes(i,:);
-                for j = 1:3
-                    dir = childrenDirection(i,:);
+            for i = 1:length(planes)
+                axis = planes(:,i);
+                for j = 1:length(childrenDirection)
+                    dir = childrenDirection(j,:);
                     [seed1, seed2, tedges] = RestrictedBox.getSeeds(edges,dir,axis);
                     [volumeTotal,edgeList1_,edgeList2_,corners] = RestrictedBox.createVolumes(tedges,seed1,seed2);
-                    if volumeTotal < minVolume
-                        for k = 1:2
-                            if dir(k) > 0  % set distance based on upper child
-                                dist(k) = dot(h,axis) - dot(corners(2,:,k),axis);
-                            else
-                                dist(k) = dot(corners(1,:,k),axis) - dot(l,axis);
-                            end
+                    tdist = [0,0];
+                    volumeTotal = 0;
+                    for k = 1:2
+                        if dir(k) > 0  % set distance based on upper child
+                            % if upper child we adjust l corner
+                            tdist(k) = dot(corners(:,1,k),axis) - dot(l,axis);
+                            sideLength = h - (l + tdist(k).*axis);
+                            volumeTotal = volumeTotal + sideLength(1)*sideLength(2);
+                        else % set distance based on lower child
+                            % if lower child we adjust h corner
+                            tdist(k) = dot(h,axis) - dot(corners(:,2,k),axis);
+                            sideLength = (h - tdist(k).*axis) - l;
+                            volumeTotal = volumeTotal + sideLength(1)*sideLength(2);
                         end
+                    end
+                     
+                    if volumeTotal < minVolume
+                        dist = tdist;
                         minVolume = volumeTotal;
                         edgeList1 = edgeList1_;
                         edgeList2 = edgeList2_;
-                        splitPlane = axis;
+                        splittingAxis = axis;
                         childDir = dir;
                     end
                 end
             end
             % Child 1
-            child1 = RestrictedBox(splitPlane,childDir,dist,edgeList1);
+            child1 = RestrictedBox(splittingAxis,childDir(1),dist(1),edgeList1);
             if length(edgeList1) > 1
-                if dir(1) >  0 % upper child
-                    child1.children = RestrictedBox.makeChildren(edgeList1,l + dist(1),h);
+                if childDir(1) >  0 % upper child
+                    child1.children = RestrictedBox.makeChildren(edgeList1,l + splittingAxis*dist(1),h);
                 else % lower chlid
-                    child1.children = RestrictedBox.makeChildren(edgeList1,l,h - dist(1));
+                    child1.children = RestrictedBox.makeChildren(edgeList1,l,h - splittingAxis*dist(1));
                 end
             end
             % Child 2
-            child2 = RestrictedBox(splitPlane,childDir,dist,edgeList2);
-            if length(edgeList1) > 2
-                if dir(1) >  0 % upper child
-                    child2.children = RestrictedBox.makeChildren(edgeList2,l + dist(2),h);
+            child2 = RestrictedBox(splittingAxis,childDir(2),dist(2),edgeList2);
+            if length(edgeList2) > 1
+                if childDir(2) >  0 % upper child
+                    child2.children = RestrictedBox.makeChildren(edgeList2,l + splittingAxis*dist(2),h);
                 else % lower chlid
-                    child2.children = RestrictedBox.makeChildren(edgeList2,l,h - dist(2));
+                    child2.children = RestrictedBox.makeChildren(edgeList2,l,h - splittingAxis*dist(2));
                 end
             end
             % to return children
@@ -100,13 +111,27 @@ classdef RestrictedBox
         end
         
         function [seed1, seed2, edges] = getSeeds(edges,dir,axis)
-            seedPos1 = -100*dir(1);
-            seed1 = 0;
-            seedPos2 = -100*dir(2);
-            seed2 = 0;
-            for edge = edges
+            seedPos1 = dot(axis,(edges(1).vertex1 + edges(2).vertex2)/2)*dir(1);
+            seed1 = edges(1);
+            seedPos2 = dot(axis,(edges(2).vertex1 + edges(2).vertex2)/2)*dir(2);
+            seed2 = edges(2);
+            if seedPos2*dir(2) > seedPos1*dir(1)  % Necessary to check when we only have 2 edges 
+                % this just lets us swap the two seeds off the bat since we
+                % dont check them in the loop below
+                tEdge = seed1;
+                tPos = seedPos1;
+                seed1 = seed2;
+                seedPos1 = seedPos2;
+                seed2 = tEdge;
+                seedPos2 = tPos;
+            end
+            for edge = edges(3:end)
                 edgePos = dot(axis,(edge.vertex1 + edge.vertex2)/2);
                 if edgePos*dir(1) > seedPos1*dir(1) % modify based on lower or upper child
+                    if seedPos1*dir(2) > seedPos2*dir(2)  % modify based on lower or upper child
+                        seed2 = seed1;
+                        seedPos2 = seedPos1;
+                    end
                     seed1 = edge;
                     seedPos1 = edgePos;
                     continue
@@ -129,25 +154,37 @@ classdef RestrictedBox
             edges(remIndex) = [];
         end
         function [volumeTotal, edgeList1,edgeList2, corners] = createVolumes(edges,seed1,seed2)
-            edgeList1 = [seed1];
-            l1 = min(seed1.vertex1,seed1.vertex2);
-            h1 = max(seed1.vertex1,seed1.vertex2);
-            edgeList2 = [seed2];
-            l2 = min(seed2.vertex1,seed1.vertex2);
-            h2 = max(seed2.vertex1,seed1.vertex2);
-            for edge = edges
-                if RestrictedBox.getVolume([edgeList1 edge]) < RestrictedBox.getVolume([edgeList2, edge])
+            %CREATEVOLUMES - divide an edge list into two separate
+            %edgeLists for bounding volumes 
+            edgeList1 = seed1;
+            l1 = min(seed1.vertex1,seed1.vertex2); % lower corner box 1
+            h1 = max(seed1.vertex1,seed1.vertex2); % upper corner box 1
+            edgeList2 = seed2;
+            l2 = min(seed2.vertex1,seed2.vertex2); % lower corner box 2
+            h2 = max(seed2.vertex1,seed2.vertex2); % upper corner box 2
+            for edge = edges  % loop through edges
+                volume1 = RestrictedBox.getVolume(edgeList1);
+                volume2 = RestrictedBox.getVolume(edgeList2);
+                volume1Ext = RestrictedBox.getVolume([edgeList1 edge]);
+                volume2Ext = RestrictedBox.getVolume([edgeList2, edge]);
+                if volume1Ext + volume2 < volume1 + volume2Ext
+                    % Adding to list 1 will keep total volume lowest
+                    % update corners
                     temp_lw = min(edge.vertex1,edge.vertex2);
                     temp_hw = max(edge.vertex1,edge.vertex2);
                     l1 = min(l1,temp_lw);
                     h1 = max(h1,temp_hw);
+                    % update list
                     edgeList1 = [edgeList1 edge];
                 else
+                    % Adding to list 2 will keep total volume lowest
+                    % update corners
                     temp_lw = min(edge.vertex1,edge.vertex2);
                     temp_hw = max(edge.vertex1,edge.vertex2);
                     l2 = min(l2,temp_lw);
                     h2 = max(h2,temp_hw);
-                    edgelist2 = [edgeList2, edge];
+                    % update list
+                    edgeList2 = [edgeList2, edge];
                 end
             end
             corners(:,:,1) = [l1,h1];
@@ -155,7 +192,9 @@ classdef RestrictedBox
             volumeTotal = RestrictedBox.getVolume(edgeList1) + RestrictedBox.getVolume(edgeList2);
         end
         
-        function volume = getVolume(edges)
+        function [volume, l, h] = getVolume(edges)
+            %GETVOLUME - return the volume of the box with the given set of
+            %edges. 
             l = min(edges(1).vertex1,edges(1).vertex2);
             h = max(edges(1).vertex1,edges(1).vertex2);
             for i = 2:length(edges)
@@ -165,7 +204,54 @@ classdef RestrictedBox
                 h = max(h,temp_hw);
             end
             sideLengths = h-l;
-            volume = norm(sideLengths)^2;
+            volume = sideLengths(1)*sideLengths(2);
+        end
+        
+        function plotBox(box,options)
+            arguments
+                box (1,1) AABB
+                options.layer (1,1) double = 1;
+                options.Color = [0 0 1];
+                options.LineWidth = 2;
+            end
+            if options.layer == 1
+                box.plotBox('color',options.Color,'LineWidth',options.LineWidth);
+            else
+                RestrictedBox.plotLayer(box.children(1),box.l,box.h,options.layer-1,...
+                    'Color',options.Color,'LineWidth',options.LineWidth)
+                RestrictedBox.plotLayer(box.children(2),box.l,box.h,options.layer-1,...
+                    'Color',options.Color,'LineWidth',options.LineWidth)
+            end
+                
+        end
+        
+        function plotLayer(box,l,h,layer,options)
+            arguments
+                box (1,1) RestrictedBox
+                l 
+                h
+                layer
+                options.Color = [0 0 1]
+                options.LineWidth = 2
+            end
+            if box.dir > 0
+                l = l + box.splitPlaneAxis.*box.dist;
+            else
+                h = h - box.splitPlaneAxis.*box.dist;
+            end
+            if layer == 1
+                gca;
+                hold on;
+                points = [l, [l(1);h(2)], h, [h(1);l(2)], l];
+                plot(points(1,:), points(2,:),'LineWidth',options.LineWidth,...
+                    'Color', options.Color,'LineStyle','--');
+                hold off;
+            elseif ~isempty(box.children)
+                RestrictedBox.plotLayer(box.children(1),l,h,layer-1,...
+                    'Color',options.Color,'LineWidth',options.LineWidth)
+                RestrictedBox.plotLayer(box.children(2),l,h,layer-1,...
+                    'Color',options.Color,'LineWidth',options.LineWidth)
+            end
         end
     end
 end
