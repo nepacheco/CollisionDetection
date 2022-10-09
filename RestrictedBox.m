@@ -207,6 +207,19 @@ classdef RestrictedBox
             volume = sideLengths(1)*sideLengths(2);
         end
         
+        function [l, h] = updateCorner(l,h,box)
+            arguments
+                l (2,1) double
+                h (2,1) double
+                box (1,1) RestrictedBox
+            end
+            if box.dir > 0
+                l = l + box.splitPlaneAxis.*box.dist;
+            else
+                h = h - box.splitPlaneAxis.*box.dist;
+            end
+        end
+        
         function plotBox(box,options)
             arguments
                 box (1,1) AABB
