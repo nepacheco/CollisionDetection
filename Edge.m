@@ -28,6 +28,13 @@ classdef Edge
             plot(x,y,'LineWidth',options.LineWidth, 'Color',options.color);
             hold off;
         end
+        
+        function bol = eq(obj1,obj2)
+            bol = sum((obj1.vertex1 == obj2.vertex1))/2 && sum((obj1.vertex2 == obj2.vertex2))/2;
+        end
+        function bol = ne(obj1,obj2)
+            bol = (sum((obj1.vertex1 == obj2.vertex1))< 2) || (sum((obj1.vertex2 == obj2.vertex2)) < 2);
+        end
     end
 end
 
