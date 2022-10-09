@@ -8,6 +8,7 @@ classdef AABB < handle
         l (2,1) double
         h (2,1) double 
         edges (1,:) 
+        makeTree (1,1) logical = false
     end
     
     methods
@@ -15,7 +16,7 @@ classdef AABB < handle
             arguments
                 edges (1,:) Edge
                 parent = 0
-                makeTree (1,1) logical = True
+                makeTree (1,1) logical = true
             end
             %AABB Construct an instance of this class
             %   Detailed explanation goes here
@@ -31,17 +32,18 @@ classdef AABB < handle
             end
             if makeTree
                 obj.createChildren()
+                obj.makeTree = true;
             end
         end
         
         
         function createChildren(obj)
-            if (obj.hw(2) - obj.lw(2)) > (obj.hw(1) - obj.lw(1)) % split along y
+            if (obj.h(2) - obj.l(2)) > (obj.h(1) - obj.l(1)) % split along y
                 split_index = 2;
             else % split along x
                 split_index = 1;
             end
-            threshold = (obj.hw(split_index) + obj.lw(split_index))/2;
+            threshold = (obj.h(split_index) + obj.l(split_index))/2;
             edgeList1 = [];
             edgeList2 = [];
             tempList = [];
@@ -86,7 +88,7 @@ classdef AABB < handle
                     'Color', options.color,'LineStyle','--');
                 hold off;
             else
-                if ~isempty(obj.children)
+                if ~isempty(obj.children) && obj.makeTree
                     obj.children(1).plotBox('LineWidth', options.LineWidth,'layer',options.layer-1)
                     obj.children(2).plotBox('LineWidth', options.LineWidth,'layer',options.layer-1)
                 end
