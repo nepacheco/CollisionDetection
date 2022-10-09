@@ -9,19 +9,25 @@ classdef NPolygon < handle
     end
     
     methods
-        function obj = NPolygon(N,pos)
+        function obj = NPolygon(N,pos,random)
             %NPolygon Construct an instance of this class
             %   Creates a polygon with the specified number of vertices and
             %   eges
             arguments
                 N (1,1) double {mustBeGreaterThan(N,2)} = 3
                 pos (2,1) double = [0;0]
+                random (1,1) logical = true
             end
             obj.pos = pos;
             angleStep = 2*pi/N;
             for i = 1:N
-                vertexAngle = (i-1)*angleStep + rand()*angleStep;
-                vertexMag = rand();
+                if random
+                    vertexAngle = (i-1)*angleStep + rand()*angleStep;
+                    vertexMag = rand();
+                else
+                    vertexAngle = (i-1)*angleStep;
+                    vertexMag = 1;
+                end
                 obj.vertices(:,i) = pos + [cos(vertexAngle) -sin(vertexAngle); sin(vertexAngle) cos(vertexAngle)]*[vertexMag;0];
             end
             for i = 1:N
