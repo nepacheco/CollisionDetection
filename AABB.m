@@ -15,7 +15,7 @@ classdef AABB < handle
             arguments
                 edges (1,:) Edge
                 parent = 0
-                makeTree (1,1) bool = True
+                makeTree (1,1) logical = True
             end
             %AABB Construct an instance of this class
             %   Detailed explanation goes here
@@ -81,7 +81,7 @@ classdef AABB < handle
             if options.layer == 1  
                 gca;
                 hold on;
-                points = [obj.lw, [obj.lw(1);obj.hw(2)], obj.hw, [obj.hw(1);obj.lw(2)], obj.lw];
+                points = [obj.l, [obj.l(1);obj.h(2)], obj.h, [obj.h(1);obj.l(2)], obj.l];
                 plot(points(1,:), points(2,:),'LineWidth',options.LineWidth,...
                     'Color', options.color,'LineStyle','--');
                 hold off;
