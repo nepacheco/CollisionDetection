@@ -1,4 +1,5 @@
 clear;close all;clc;
+addpath("PrimitiveTest");
 folder = "Results/Velocity/";
 version = 1;
 %% AABB Velocity Test
@@ -9,8 +10,10 @@ AABBAverageFrameRate = zeros(length(velocityTargets),numTrials);
 AABBPenetrationDistance = zeros(length(velocityTargets),numTrials);
 AABBCollisionMatrix = zeros(length(velocityTargets),numTrials);
 for i = 1:length(velocityTargets)
+    rng(1)
     for j = 1:numTrials
-        rng(1)
+        close
+        figure
         speed = velocityTargets(i);
         polygon1 = NPolygon(N);
         polygon2 = NPolygon(N,[speed;0]);
@@ -22,6 +25,7 @@ for i = 1:length(velocityTargets)
         
         totalTime = 0;
         frameCount = 0;
+        
         tic;
         while ~inCollision && totalTime < abs((speed+5)/speed)
             timeDiff = toc;
@@ -55,8 +59,8 @@ RestrictedAverageFrameRate = zeros(length(velocityTargets),numTrials);
 RestrictedPenetrationDistance = zeros(length(velocityTargets),numTrials);
 RestrictedCollisionMatrix = zeros(length(velocityTargets),numTrials);
 for i = 1:length(velocityTargets)
+    rng(1)
     for j = 1:numTrials
-        rng(1)
         speed = velocityTargets(i);
         polygon1 = NPolygon(N);
         polygon2 = NPolygon(N,[speed;0]);
@@ -95,3 +99,47 @@ for i = 1:length(velocityTargets)
 end
 saveloc = sprintf("%sRestrictedVelocityResults_v%d",folder,version);
 save(saveloc,"RestrictedAverageFrameRate","RestrictedCollisionMatrix","RestrictedPenetrationDistance");
+
+%% Brute Force Velocity Test
+velocityTargets = 10:10:100;
+numTrials = 10;
+N = 20;
+BruteForceAverageFrameRate = zeros(length(velocityTargets),numTrials);
+BruteForcePenetrationDistance = zeros(length(velocityTargets),numTrials);
+BruteForceCollisionMatrix = zeros(length(velocityTargets),numTrials);
+for i = 1:length(velocityTargets)
+    rng(1)
+    for j = 1:numTrials
+        speed = velocityTargets(i);
+        polygon1 = NPolygon(N);
+        polygon2 = NPolygon(N,[speed;0]);
+        polygon1.plotPolygon();
+        polygon2.plotPolygon();
+        inCollision = false;
+        
+        totalTime = 0;
+        frameCount = 0;
+        tic;
+        while ~inCollision && totalTime < abs((speed+5)/speed)
+            timeDiff = toc;
+            tic
+            dist = timeDiff*(-speed);
+            totalTime = totalTime + timeDiff;
+            polygon2.translate([dist;0],true);
+            drawnow
+            [inCollision, ~] = RestrictedCollisionDetection(bvh1,bvh2,bvh1.l,bvh1.h,bvh2.l,bvh2.h);
+            BruteForceCollisionMatrix(i,j) = inCollision;
+            frameCount = frameCount+1;
+        end
+        RestrictedAverageFrameRate(i,j) = frameCount/totalTime;
+        distStep = 0.001;
+        while inCollision
+            BruteForcePenetrationDistance(i,j) = BruteForcePenetrationDistance(i,j) + distStep;
+            polygon2.translate([distStep;0],true);
+            bvh2.translateBox([distStep;0]);
+        [inCollision, ~] = BruteForceCollisionDetection(bvh1,bvh2,bvh1.l,bvh1.h,bvh2.l,bvh2.h); 
+        end
+    end
+end
+saveloc = sprintf("%sRestrictedVelocityResults_v%d",folder,version);
+save(saveloc,"BruteForceAverageFrameRate","BruteForceCollisionMatrix","BruteForcePenetrationDistance");

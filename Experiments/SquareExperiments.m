@@ -11,8 +11,9 @@ numVertices = 5:5:100;
 numTrialsPerVertice = 20;
 buildAABBResults = zeros(length(numVertices),numTrialsPerVertice);
 for i = 1:length(numVertices)
+    rng(1);
     for trial = 1:numTrialsPerVertice
-        rng(1);
+        
         N = numVertices(i);
         polygon = SimplePolygon(N);
         tic
@@ -30,8 +31,9 @@ numVertices = 5:5:100;
 numTrialsPerVertice = 20;
 buildRestrictedResults = zeros(length(numVertices),numTrialsPerVertice);
 for i = 1:length(numVertices)
+    rng(1);
     for trial = 1:numTrialsPerVertice
-        rng(1);
+        
         N = numVertices(i);
         polygon = SimplePolygon(N);
         tic
@@ -66,8 +68,9 @@ numTrialsPerVertice = 20;
 collisionAABBResults = zeros(length(numVertices),numTrialsPerVertice);
 numCollisions = zeros(length(numVertices),numTrialsPerVertice);
 for i = 1:length(numVertices)
+    rng(1);
     for trial = 1:numTrialsPerVertice
-        rng(1);
+        
         N = numVertices(i);
         polygon1 = SimplePolygon(N);
         polygon2 = SimplePolygon(N);
@@ -93,8 +96,9 @@ numTrialsPerVertice = 20;
 collisionBruteForceResults = zeros(length(numVertices),numTrialsPerVertice);
 numCollisions = zeros(length(numVertices),numTrialsPerVertice);
 for i = 1:length(numVertices)
+    rng(1);
     for trial = 1:numTrialsPerVertice
-        rng(1);
+        
         N = numVertices(i);
         polygon1 = SimplePolygon(N);
         polygon2 = SimplePolygon(N);
@@ -116,8 +120,9 @@ numTrialsPerVertice = 20;
 collisionRestrictedResults = zeros(length(numVertices),numTrialsPerVertice);
 numCollisions = zeros(length(numVertices),numTrialsPerVertice);
 for i = 1:length(numVertices)
+    rng(1);
     for trial = 1:numTrialsPerVertice
-        rng(1);
+        
         N = numVertices(i);
         polygon1 = SimplePolygon(N);
         polygon2 = SimplePolygon(N);
@@ -146,8 +151,9 @@ numTrialsPerVertice = 20;
 collisionAABBResults = zeros(length(numVertices),numTrialsPerVertice);
 numCollisions = zeros(length(numVertices),numTrialsPerVertice);
 for i = 1:length(numVertices)
+    rng(1);
     for trial = 1:numTrialsPerVertice
-        rng(1);
+        
         N = numVertices(i);
         polygon1 = SimplePolygon(N);
         polygon2 = SimplePolygon(N,[0.8;0]);
@@ -173,8 +179,9 @@ numTrialsPerVertice = 20;
 collisionBruteForceResults = zeros(length(numVertices),numTrialsPerVertice);
 numCollisions = zeros(length(numVertices),numTrialsPerVertice);
 for i = 1:length(numVertices)
+    rng(1);
     for trial = 1:numTrialsPerVertice
-        rng(1);
+        
         N = numVertices(i);
         polygon1 = SimplePolygon(N);
         polygon2 = SimplePolygon(N,[0.8;0]);
@@ -196,8 +203,9 @@ numTrialsPerVertice = 20;
 collisionRestrictedResults = zeros(length(numVertices),numTrialsPerVertice);
 numCollisions = zeros(length(numVertices),numTrialsPerVertice);
 for i = 1:length(numVertices)
+    rng(1);
     for trial = 1:numTrialsPerVertice
-        rng(1);
+        
         N = numVertices(i);
         polygon1 = SimplePolygon(N);
         polygon2 = SimplePolygon(N,[0.8;0]);
