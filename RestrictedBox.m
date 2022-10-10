@@ -26,11 +26,16 @@ classdef RestrictedBox
             obj.edges = edges;
              
         end
-        
-        function outputArg = method1(obj,inputArg)
-            %METHOD1 Summary of this method goes here
-            %   Detailed explanation goes here
-            outputArg = obj.Property1 + inputArg;
+
+        function translateBox(obj,dist)
+%             obj.h = obj.h + dist;
+%             obj.l = obj.l + dist;
+            if length(obj.edges) == 1
+                obj.edges.vertex1 = obj.edges.vertex1 + dist;
+                obj.edges.vertex2 = obj.edges.vertex2 + dist;
+            end
+            obj.children(1).translateBox(dist);
+            obj.children(2).translateBox(dist);
         end
     end
     methods(Static)
