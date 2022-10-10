@@ -9,6 +9,7 @@ for i = 1:N1
     for j = 1:N2
         if EdgeIntersectionTest(polygon1.edges(i),polygon2.edges(j))
             edges = [edges [polygon1.edges(1);polygon2.edges(2)]];
+            inCollision = true;
         end
     end
 end
