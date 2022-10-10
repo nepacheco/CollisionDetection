@@ -78,8 +78,10 @@ classdef AABB < handle
 %                 obj.edges.vertex1 = obj.edges.vertex1 + dist;
 %                 obj.edges.vertex2 = obj.edges.vertex2 + dist;
 %             end
-            obj.children(1).translateBox(dist);
-            obj.children(2).translateBox(dist);
+            if ~isempty(obj.children)
+                obj.children(1).translateBox(dist);
+                obj.children(2).translateBox(dist);
+            end
         end
         
         function plotBox(obj,options)
