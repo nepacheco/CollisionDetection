@@ -6,6 +6,7 @@ classdef SimplePolygon < handle
         vertices (2,:) double
         edges (1,:) Edge
         pos (2,1) double
+        plotHandle
     end
     
     methods
@@ -66,18 +67,53 @@ classdef SimplePolygon < handle
                 obj.edges(1,i) = Edge(obj.vertices(:,i),obj.vertices(:,mod(i,numSides)+1));
             end
         end
+
+        function translate(obj,dist,display)
+            arguments
+                obj
+                dist (2,1) double
+                display (1,1) logical = false
+            end
+            for i = 1:length(obj.vertices)
+                obj.vertices(:,i) = obj.vertices(:,i) + dist;
+                obj.edges(i).vertex1 = obj.edges(i).vertex1 + dist;
+                obj.edges(i).vertex2 = obj.edges(i).vertex2 + dist;
+            end
+            obj.pos = obj.pos + dist;
+            if display
+                obj.updatePlot();
+            end
+        end
         
-        function plotPolygon(obj)
+        function plotPolygon(obj,options)
             %plotPolygon Plots the Polygon
             %   Detailed explanation goes here
+            arguments
+                obj
+                options.Color (1,3) double = [0 0 1];
+                options.LineWidth (1,1) double = 1.5;
+            end
             gca;
             hold on;
-            for i = 1:length(obj.edges)
-                obj.markEdge(i)
-            end
+            points = [obj.vertices obj.vertices(:,1)];
+            obj.plotHandle = plot(points(1,:),points(2,:),'Color',...
+                options.Color,'LineWidth',options.LineWidth);
             grid on;
             axis equal;
             hold off;
+        end
+
+        function updatePlot(obj,options)
+            %plotPolygon Plots the Polygon
+            %   Detailed explanation goes here
+            arguments
+                obj
+                options.Color (1,3) double = [0 0 1];
+                options.LineWidth (1,1) double = 1.5;
+            end
+            points = [obj.vertices obj.vertices(:,1)];
+            obj.plotHandle.XData = points(1,:);
+            obj.plotHandle.YData = points(2,:);
         end
         
         function markEdge(obj,index,options)

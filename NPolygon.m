@@ -6,6 +6,7 @@ classdef NPolygon < handle
         vertices (2,:) double
         edges (1,:) Edge
         pos (2,1) double
+        plotHandle
     end
     
     methods
@@ -16,14 +17,14 @@ classdef NPolygon < handle
             arguments
                 N (1,1) double {mustBeGreaterThan(N,2)} = 3
                 pos (2,1) double = [0;0]
-                random (1,1) logical = true
+                random (1,1) double = 1
             end
             obj.pos = pos;
             angleStep = 2*pi/N;
             for i = 1:N
                 if random
                     vertexAngle = (i-1)*angleStep + rand()*angleStep;
-                    vertexMag = rand();
+                    vertexMag = rand()*random + (1-random);
                 else
                     vertexAngle = (i-1)*angleStep;
                     vertexMag = 1;
@@ -35,17 +36,52 @@ classdef NPolygon < handle
             end
         end
         
-        function plotPolygon(obj)
+        function translate(obj,dist,display)
+            arguments
+                obj
+                dist (2,1) double
+                display (1,1) logical = false
+            end
+            for i = 1:length(obj.vertices)
+                obj.vertices(:,i) = obj.vertices(:,i) + dist;
+                obj.edges(i).vertex1 = obj.edges(i).vertex1 + dist;
+                obj.edges(i).vertex2 = obj.edges(i).vertex2 + dist;
+            end
+            obj.pos = obj.pos + dist;
+            if display
+                obj.updatePlot();
+            end
+        end
+        
+        function plotPolygon(obj,options)
             %plotPolygon Plots the Polygon
             %   Detailed explanation goes here
+            arguments
+                obj
+                options.Color (1,3) double = [0 0 1];
+                options.LineWidth (1,1) double = 1.5;
+            end
             gca;
             hold on;
-            for i = 1:length(obj.edges)
-                obj.markEdge(i)
-            end
+            points = [obj.vertices obj.vertices(:,1)];
+            obj.plotHandle = plot(points(1,:),points(2,:),'Color',...
+                options.Color,'LineWidth',options.LineWidth);
             grid on;
             axis equal;
             hold off;
+        end
+        
+        function updatePlot(obj,options)
+            %plotPolygon Plots the Polygon
+            %   Detailed explanation goes here
+            arguments
+                obj
+                options.Color (1,3) double = [0 0 1];
+                options.LineWidth (1,1) double = 1.5;
+            end
+            points = [obj.vertices obj.vertices(:,1)];
+            obj.plotHandle.XData = points(1,:);
+            obj.plotHandle.YData = points(2,:);
         end
         
         function markEdge(obj,index,options)
