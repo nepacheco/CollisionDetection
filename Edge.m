@@ -1,4 +1,4 @@
-classdef Edge
+classdef Edge < handle
     %EDGE Summary of this class goes here
     %   Detailed explanation goes here
     
@@ -27,6 +27,11 @@ classdef Edge
             y = [obj.vertex1(2);obj.vertex2(2)];
             plot(x,y,'LineWidth',options.LineWidth, 'Color',options.color);
             hold off;
+        end
+
+        function obj = translate(obj,dist)
+            obj.vertex1 = obj.vertex1 + dist;
+            obj.vertex2 = obj.vertex2 + dist;
         end
         
         function bol = eq(obj1,obj2)
