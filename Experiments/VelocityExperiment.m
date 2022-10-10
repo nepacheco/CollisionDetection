@@ -61,6 +61,8 @@ RestrictedCollisionMatrix = zeros(length(velocityTargets),numTrials);
 for i = 1:length(velocityTargets)
     rng(1)
     for j = 1:numTrials
+        close 
+        figure
         speed = velocityTargets(i);
         polygon1 = NPolygon(N);
         polygon2 = NPolygon(N,[speed;0]);
@@ -102,7 +104,7 @@ save(saveloc,"RestrictedAverageFrameRate","RestrictedCollisionMatrix","Restricte
 
 %% Brute Force Velocity Test
 velocityTargets = 10:10:100;
-numTrials = 10;
+numTrials = 1;
 N = 20;
 BruteForceAverageFrameRate = zeros(length(velocityTargets),numTrials);
 BruteForcePenetrationDistance = zeros(length(velocityTargets),numTrials);
@@ -110,6 +112,8 @@ BruteForceCollisionMatrix = zeros(length(velocityTargets),numTrials);
 for i = 1:length(velocityTargets)
     rng(1)
     for j = 1:numTrials
+        close 
+        figure
         speed = velocityTargets(i);
         polygon1 = NPolygon(N);
         polygon2 = NPolygon(N,[speed;0]);
@@ -127,7 +131,7 @@ for i = 1:length(velocityTargets)
             totalTime = totalTime + timeDiff;
             polygon2.translate([dist;0],true);
             drawnow
-            [inCollision, ~] = RestrictedCollisionDetection(bvh1,bvh2,bvh1.l,bvh1.h,bvh2.l,bvh2.h);
+            [inCollision, ~] = BruteForceCollisionDetection(polygon1,polygon2);
             BruteForceCollisionMatrix(i,j) = inCollision;
             frameCount = frameCount+1;
         end
@@ -137,9 +141,9 @@ for i = 1:length(velocityTargets)
             BruteForcePenetrationDistance(i,j) = BruteForcePenetrationDistance(i,j) + distStep;
             polygon2.translate([distStep;0],true);
             bvh2.translateBox([distStep;0]);
-        [inCollision, ~] = BruteForceCollisionDetection(bvh1,bvh2,bvh1.l,bvh1.h,bvh2.l,bvh2.h); 
+        [inCollision, ~] = BruteForceCollisionDetection(polygon1,polygon2); 
         end
     end
 end
-saveloc = sprintf("%sRestrictedVelocityResults_v%d",folder,version);
+saveloc = sprintf("%sBruteForceVelocityResults_v%d",folder,version);
 save(saveloc,"BruteForceAverageFrameRate","BruteForceCollisionMatrix","BruteForcePenetrationDistance");
