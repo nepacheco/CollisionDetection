@@ -76,8 +76,7 @@ classdef SimplePolygon < handle
             end
             for i = 1:length(obj.vertices)
                 obj.vertices(:,i) = obj.vertices(:,i) + dist;
-                obj.edges(i).vertex1 = obj.edges(i).vertex1 + dist;
-                obj.edges(i).vertex2 = obj.edges(i).vertex2 + dist;
+                obj.edges(i).translate(dist);
             end
             obj.pos = obj.pos + dist;
             if display
