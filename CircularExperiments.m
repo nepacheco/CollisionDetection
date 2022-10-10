@@ -1,3 +1,5 @@
+%% utils
+addpath("PrimitiveTest")
 %% Timing Building AABB Tree
 clc;clear;close all;
 NPolygon(10);
@@ -16,7 +18,7 @@ for i = 1:length(numVertices)
         buildAABBResults(i,trial) = toc;
     end
 end
-save("BuildAABBResults.mat",buildAABBResults,numVertices);
+save("Results/BuildAABBResults.mat","buildAABBResults","numVertices");
 %% Timing Building RestrictedBoxTree
 clc;clear;close all;
 NPolygon(10);
@@ -51,7 +53,6 @@ for i = 1:numTrials
 end
 
 save("Results/EdgeIntersectionTestResults.mat","edgeResults");
-
 %% Timing Collision Check AABB Tree
 clc;clear;close all;
 NPolygon(10);
@@ -77,7 +78,7 @@ for i = 1:length(numVertices)
         numCollisions(i,trial) = size(edges,2);
     end
 end
-save("CollisionAABBResults.mat","collisionAABBResults","numVertices");
+save("Results/CollisionAABBResults.mat","collisionAABBResults","numVertices","numCollisions");
 %% Timing Collision Check with Brute Force
 clc;clear;close all;
 NPolygon(10);
@@ -85,7 +86,7 @@ NPolygon(10);
 rng(1);
 numVertices = 5:5:1000;
 numTrialsPerVertice = 20;
-collisionAABBResults = zeros(length(numVertices),numTrialsPerVertice);
+collisionBruteForceResults = zeros(length(numVertices),numTrialsPerVertice);
 numCollisions = zeros(length(numVertices),numTrialsPerVertice);
 for i = 1:length(numVertices)
     for trial = 1:numTrialsPerVertice
@@ -95,11 +96,11 @@ for i = 1:length(numVertices)
         polygon2 = NPolygon(N);
         tic
         [~,edges] = BruteForceCollisionDetection(polygon1,polygon2);
-        collisionAABBResults(i,trial) = toc;
+        collisionBruteForceResults(i,trial) = toc;
         numCollisions(i,trial) = size(edges,2);
     end
 end
-save("CollisionAABBResults.mat","collisionAABBResults","numVertices");
+save("Results/CollisionBruteForceResults.mat","collisionBruteForceResults","numVertices","numCollisions");
 %% Timing Collision Check RestrictedBoxTree
 clc;clear;close all;
 NPolygon(10);
@@ -128,4 +129,4 @@ for i = 1:length(numVertices)
         numCollisions(i,trial) = size(edges,2);
     end
 end
-save("CollisionRestrictedBoxResults.mat","collisionRestrictedResults","numVertices");
+save("Results/CollisionRestrictedBoxResults.mat","collisionRestrictedResults","numVertices","numCollisions");
