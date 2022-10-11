@@ -1,6 +1,6 @@
 % clc;clear;close all;
-version = 2;
-folder = "Results/Circle/";
+version = 3;
+folder = "Results/Square/";
 %% Plot Build Results
 loadloc = sprintf("%sBuildAABBResults_v%d",folder,version);
 load(loadloc)
@@ -18,10 +18,12 @@ xlabel("Number of Vertices")
 ylabel("Time (s)")
 
 %% Plot Edge-Edge Timing
-
-load(sprintf("%sEdgeIntersectionTestResults_v%d",folder,version))
-mean(edgeResults);
-fprintf("Edge-Edge Comparisons take about %0.5f microseconds\n",mean(edgeResults)*1e6);
+try
+    load(sprintf("%sEdgeIntersectionTestResults_v%d",folder,version))
+    mean(edgeResults);
+    fprintf("Edge-Edge Comparisons take about %0.5f microseconds\n",mean(edgeResults)*1e6);
+catch
+end
 
 %% Heavy Collision Timing
 load(sprintf("%sHeavyCollisionAABBResults_v%d",folder,version));

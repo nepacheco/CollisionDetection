@@ -1,7 +1,7 @@
 %% utils
 clc; clear; close all;
 addpath("PrimitiveTest")
-version = 3;
+version = 4;
 folder = "Results/Square/";
 SimplePolygon(10);
 SimplePolygon(10);

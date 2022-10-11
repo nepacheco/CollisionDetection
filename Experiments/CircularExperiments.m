@@ -1,7 +1,7 @@
 %% utils
 clc;clear; close all;
 addpath("PrimitiveTest")
-version = 3;
+version = 4;
 folder = "Results/Circle/";
 NPolygon(10);
 NPolygon(10);

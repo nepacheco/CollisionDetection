@@ -1,7 +1,7 @@
 clear;close all;clc;
 addpath("PrimitiveTest");
 folder = "Results/Velocity/";
-version = 3;
+version = 4;
 %% AABB Velocity Test
 velocityTargets = 10:10:100;
 numTrials = 20;
