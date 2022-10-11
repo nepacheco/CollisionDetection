@@ -11,27 +11,27 @@ classdef SimplePolygon < handle
     
     methods
         function obj = SimplePolygon(numSides,pos)
-        arguments
-            numSides
-            pos = [0;0];
-        end
-        % https://stackoverflow.com/questions/8997099/algorithm-to-generate-random-2d-polygon
+            arguments
+                numSides
+                pos = [0;0];
+            end
+            % https://stackoverflow.com/questions/8997099/algorithm-to-generate-random-2d-polygon
             if numSides < 3
                 x = [];
                 y = [];
                 dt = DelaunayTri();
                 return
             end
-
+            
             oldState = warning('off', 'MATLAB:TriRep:PtsNotInTriWarnId');
-
+            
             fudge = ceil(numSides/10);
             x = rand(numSides+fudge, 1);
             y = rand(numSides+fudge, 1);
             dt = DelaunayTri(x, y);
             boundaryEdges = freeBoundary(dt);
             numEdges = size(boundaryEdges, 1);
-
+            
             while numEdges ~= numSides
                 if numEdges > numSides
                     triIndex = vertexAttachments(dt, boundaryEdges(:,1));
@@ -54,20 +54,26 @@ classdef SimplePolygon < handle
                 boundaryEdges = freeBoundary(dt);
                 numEdges = size(boundaryEdges, 1);
             end
-
+            
             boundaryEdges = [boundaryEdges(:,1); boundaryEdges(1,1)];
             x = dt.X(boundaryEdges, 1);
             y = dt.X(boundaryEdges, 2);
             warning(oldState);
-            
-            for i = 1:numSides
-                obj.vertices(:,i) = pos + [x(i);y(i)];
-            end
-            for i = 1:numSides
-                obj.edges(1,i) = Edge(obj.vertices(:,i),obj.vertices(:,mod(i,numSides)+1));
+            if length(x) < numSides
+                tempObj = SimplePolygon(numSides,pos);
+                obj.edges = tempObj.edges;
+                obj.vertices = tempObj.vertices;
+                obj.pos = tempObj.pos;
+            else
+                for i = 1:numSides
+                    obj.vertices(:,i) = pos + [x(i);y(i)];
+                end
+                for i = 1:numSides
+                    obj.edges(1,i) = Edge(obj.vertices(:,i),obj.vertices(:,mod(i,numSides)+1));
+                end
             end
         end
-
+        
         function translate(obj,dist,display)
             arguments
                 obj
@@ -101,7 +107,7 @@ classdef SimplePolygon < handle
             axis equal;
             hold off;
         end
-
+        
         function updatePlot(obj,options)
             %plotPolygon Plots the Polygon
             %   Detailed explanation goes here
