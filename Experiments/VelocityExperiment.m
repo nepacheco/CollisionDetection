@@ -4,7 +4,7 @@ folder = "Results/Velocity/";
 version = 3;
 %% AABB Velocity Test
 velocityTargets = 10:10:100;
-numTrials = 10;
+numTrials = 20;
 N = 20;
 AABBAverageFrameRate = zeros(length(velocityTargets),numTrials);
 AABBPenetrationDistance = zeros(length(velocityTargets),numTrials);
@@ -53,7 +53,7 @@ saveloc = sprintf("%sAABBVelocityResults_v%d",folder,version);
 save(saveloc,"AABBAverageFrameRate","AABBCollisionMatrix","AABBPenetrationDistance");
 %% Restricted Velocity Test
 velocityTargets = 10:10:100;
-numTrials = 10;
+numTrials = 20;
 N = 20;
 RestrictedAverageFrameRate = zeros(length(velocityTargets),numTrials);
 RestrictedPenetrationDistance = zeros(length(velocityTargets),numTrials);
@@ -104,7 +104,7 @@ save(saveloc,"RestrictedAverageFrameRate","RestrictedCollisionMatrix","Restricte
 
 %% Brute Force Velocity Test
 velocityTargets = 10:10:100;
-numTrials = 10;
+numTrials = 20;
 N = 20;
 BruteForceAverageFrameRate = zeros(length(velocityTargets),numTrials);
 BruteForcePenetrationDistance = zeros(length(velocityTargets),numTrials);
