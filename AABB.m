@@ -102,8 +102,8 @@ classdef AABB < handle
                 hold off;
             else
                 if ~isempty(obj.children) && obj.makeTree
-                    obj.children(1).plotBox('LineWidth', options.LineWidth,'layer',options.layer-1)
-                    obj.children(2).plotBox('LineWidth', options.LineWidth,'layer',options.layer-1)
+                    obj.children(1).plotBox('LineWidth', options.LineWidth,'layer',options.layer-1,'color',options.color)
+                    obj.children(2).plotBox('LineWidth', options.LineWidth,'layer',options.layer-1,'color',options.color)
                 end
             end
         end
