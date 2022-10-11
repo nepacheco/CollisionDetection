@@ -19,7 +19,7 @@ classdef Edge < handle
             arguments
                 obj
                 options.LineWidth (1,1) double = 1.5
-                options.color (3,1) double = [1;0;0]
+                options.color (3,1) double = [0;0;1]
             end
             gca;
             hold on;
