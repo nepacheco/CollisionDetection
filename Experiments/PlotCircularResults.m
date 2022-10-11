@@ -42,11 +42,11 @@ plot(numVertices, mean(collisionAABBResults,2),'LineWidth',2,'DisplayName',"AABB
 plot(numVertices, mean(collisionRestrictedResults,2),'LineWidth',2,'DisplayName',"Restricted Box BVH")
 plot(numVertices, mean(collisionBruteForceResults,2),'LineWidth',2,'DisplayName',"Brute Force")
 legend()
-title(sprintf("Time to perform collision detection with\n AABB trees, RestricedBox Trees, and Brute Force Detection"))
+title(sprintf("Time to perform heavy collision detection with\n AABB trees, RestricedBox Trees, and Brute Force Detection"))
 xlabel("Number of Vertices")
 ylabel("Time (s)")
 
-%% Ligh Collision Timing
+%% Light Collision Timing
 
 load("Results/LightCollisionAABBResults.mat");
 numAABBCollisions = numCollisions;
@@ -69,6 +69,6 @@ plot(numVertices, mean(collisionAABBResults,2),'LineWidth',2,'DisplayName',"AABB
 plot(numVertices, mean(collisionRestrictedResults,2),'LineWidth',2,'DisplayName',"Restricted Box BVH")
 plot(numVertices, mean(collisionBruteForceResults,2),'LineWidth',2,'DisplayName',"Brute Force")
 legend()
-title(sprintf("Time to perform collision detection with\n AABB trees, RestricedBox Trees, and Brute Force Detection"))
+title(sprintf("Time to perform light collision detection with\n AABB trees, RestricedBox Trees, and Brute Force Detection"))
 xlabel("Number of Vertices")
 ylabel("Time (s)")

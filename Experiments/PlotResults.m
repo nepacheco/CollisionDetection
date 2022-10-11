@@ -1,6 +1,6 @@
-clc;clear;close all;
-version = 1;
-folder = "Results/Square/";
+% clc;clear;close all;
+version = 2;
+folder = "Results/Circle/";
 %% Plot Build Results
 loadloc = sprintf("%sBuildAABBResults_v%d",folder,version);
 load(loadloc)
@@ -24,7 +24,6 @@ mean(edgeResults);
 fprintf("Edge-Edge Comparisons take about %0.5f microseconds\n",mean(edgeResults)*1e6);
 
 %% Heavy Collision Timing
-sprintf("%sHeavyCollisionAABBResults_v%d",folder,version);
 load(sprintf("%sHeavyCollisionAABBResults_v%d",folder,version));
 numAABBCollisions = numCollisions;
 load(sprintf("%sHeavyCollisionBruteForceResults_v%d",folder,version));
@@ -46,9 +45,19 @@ plot(numVertices, mean(collisionAABBResults,2),'LineWidth',2,'DisplayName',"AABB
 plot(numVertices, mean(collisionRestrictedResults,2),'LineWidth',2,'DisplayName',"Restricted Box BVH")
 plot(numVertices, mean(collisionBruteForceResults,2),'LineWidth',2,'DisplayName',"Brute Force")
 legend()
-title(sprintf("Time to perform collision detection with\n AABB trees, RestricedBox Trees, and Brute Force Detection"))
+title(sprintf("Time to perform heavy collision detection with\n AABB trees, RestrictedBox Trees, and Brute Force Detection"))
 xlabel("Number of Vertices")
 ylabel("Time (s)")
+
+
+figure
+hold on
+grid on
+
+plot(numVertices,mean(numCollisions,2),'LineWidth',2)
+xlabel("Number of Vertices")
+ylabel("Number of Collisions");
+title("Number of Collisions vs Number of Vertices");
 
 %% Light Collision Timing
 
@@ -73,6 +82,14 @@ plot(numVertices, mean(collisionAABBResults,2),'LineWidth',2,'DisplayName',"AABB
 plot(numVertices, mean(collisionRestrictedResults,2),'LineWidth',2,'DisplayName',"Restricted Box BVH")
 plot(numVertices, mean(collisionBruteForceResults,2),'LineWidth',2,'DisplayName',"Brute Force")
 legend()
-title(sprintf("Time to perform collision detection with\n AABB trees, RestricedBox Trees, and Brute Force Detection"))
+title(sprintf("Time to perform light collision detection with\n AABB trees, RestrictedBox Trees, and Brute Force Detection"))
 xlabel("Number of Vertices")
 ylabel("Time (s)")
+
+figure
+hold on
+grid on
+plot(numVertices,mean(numCollisions,2),'LineWidth',2)
+xlabel("Number of Vertices")
+ylabel("Number of Collisions");
+title("Number of Collisions vs Number of Vertices");

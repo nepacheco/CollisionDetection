@@ -1,12 +1,11 @@
 %% utils
 clc;clear; close all;
 addpath("PrimitiveTest")
-version = 2;
+version = 3;
 folder = "Results/Circle/";
+NPolygon(10);
+NPolygon(10);
 %% Timing Building AABB Tree
-
-NPolygon(10);
-NPolygon(10);
 rng(1);
 numVertices = 5:5:100;
 numTrialsPerVertice = 20;
@@ -25,9 +24,6 @@ end
 saveloc = sprintf("%sBuildAABBResults_v%d.mat",folder,version);
 save(saveloc,"buildAABBResults","numVertices");
 %% Timing Building RestrictedBoxTree
-
-NPolygon(10);
-NPolygon(10);
 rng(1);
 numVertices = 5:5:100;
 numTrialsPerVertice = 20;
@@ -47,13 +43,12 @@ end
 saveloc = sprintf("%sBuildRestrictedBoxResults_v%d.mat",folder,version);
 save(saveloc,"buildRestrictedResults","numVertices");
 %% Edge-Edge Collision Timing 
-
 rng(1);
 numTrials = 10000;
 edgeResults = zeros(1,100);
 for i = 1:numTrials
-    edge1 = Edge(rand(2,1),rand(2,1));
-    edge2 = Edge(rand(2,1),rand(2,1));
+    edge1 = Edge(rand(2,1)*0.6,rand(2,1)*0.6 + 0.4);
+    edge2 = Edge(rand(2,1)*0.6 + 0.4,rand(2,1)*0.6);
     tic
     EdgeIntersectionTest(edge1,edge2);
     edgeResults(1,i) = toc;
@@ -62,9 +57,6 @@ end
 saveloc = sprintf("%sEdgeIntersectionTestResults_v%d.mat",folder,version);
 save(saveloc,"edgeResults");
 %% Timing Collision Check AABB Tree and HEAVY COLLISION
-
-NPolygon(10);
-NPolygon(10);
 rng(1);
 numVertices = 5:5:100;
 numTrialsPerVertice = 20;
@@ -90,9 +82,6 @@ end
 saveloc = sprintf("%sHeavyCollisionAABBResults_v%d.mat",folder,version);
 save(saveloc,"collisionAABBResults","numVertices","numCollisions");
 %% Timing Collision Check with Brute Force and HEAVY COLLISION
-
-NPolygon(10);
-NPolygon(10);
 rng(1);
 numVertices = 5:5:100;
 numTrialsPerVertice = 20;
@@ -114,9 +103,6 @@ end
 saveloc = sprintf("%sHeavyCollisionBruteForceResults_v%d.mat",folder,version);
 save(saveloc,"collisionBruteForceResults","numVertices","numCollisions");
 %% Timing Collision Check RestrictedBoxTree and HEAVY COLLISION
-
-NPolygon(10);
-NPolygon(10);
 rng(1);
 numVertices = 5:5:100;
 numTrialsPerVertice = 20;
@@ -145,9 +131,6 @@ end
 saveloc = sprintf("%sHeavyCollisionRestrictedBoxResults_v%d.mat",folder,version);
 save(saveloc,"collisionRestrictedResults","numVertices","numCollisions");
 %% Timing Collision Check AABB Tree and LIGHT COLLISION
-
-NPolygon(10);
-NPolygon(10);
 rng(1);
 numVertices = 5:5:100;
 numTrialsPerVertice = 20;
@@ -159,7 +142,7 @@ for i = 1:length(numVertices)
         
         N = numVertices(i);
         polygon1 = NPolygon(N);
-        polygon2 = NPolygon(N,[1,0]);
+        polygon2 = NPolygon(N,[0.9,0.9]);
         
         restrictedBVH1 = AABB(polygon1.edges,0,true);
 
@@ -173,9 +156,6 @@ end
 saveloc = sprintf("%sLightCollisionAABBResults_v%d.mat",folder,version);
 save(saveloc,"collisionAABBResults","numVertices","numCollisions");
 %% Timing Collision Check with Brute Force and LIGHT COLLISION
-
-NPolygon(10);
-NPolygon(10);
 rng(1);
 numVertices = 5:5:100;
 numTrialsPerVertice = 20;
@@ -187,7 +167,7 @@ for i = 1:length(numVertices)
         
         N = numVertices(i);
         polygon1 = NPolygon(N);
-        polygon2 = NPolygon(N,[1,0]);
+        polygon2 = NPolygon(N,[0.9,0.9]);
         tic
         [~,edges] = BruteForceCollisionDetection(polygon1,polygon2);
         collisionBruteForceResults(i,trial) = toc;
@@ -197,9 +177,6 @@ end
 saveloc = sprintf("%sLightCollisionBruteForceResults_v%d.mat",folder,version);
 save(saveloc,"collisionBruteForceResults","numVertices","numCollisions");
 %% Timing Collision Check RestrictedBoxTree and LIGHT COLLISION
-
-NPolygon(10);
-NPolygon(10);
 rng(1);
 numVertices = 5:5:100;
 numTrialsPerVertice = 20;
@@ -211,7 +188,7 @@ for i = 1:length(numVertices)
         
         N = numVertices(i);
         polygon1 = NPolygon(N);
-        polygon2 = NPolygon(N,[1,0]);
+        polygon2 = NPolygon(N,[0.9,0.9]);
         
         restrictedBVH1 = AABB(polygon1.edges,0,false);
         restrictedBVH1 = RestrictedBox.makeTree(restrictedBVH1);

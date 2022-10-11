@@ -1,7 +1,7 @@
 clear;close all;clc;
 addpath("PrimitiveTest");
 folder = "Results/Velocity/";
-version = 1;
+version = 3;
 %% AABB Velocity Test
 velocityTargets = 10:10:100;
 numTrials = 10;
@@ -104,7 +104,7 @@ save(saveloc,"RestrictedAverageFrameRate","RestrictedCollisionMatrix","Restricte
 
 %% Brute Force Velocity Test
 velocityTargets = 10:10:100;
-numTrials = 1;
+numTrials = 10;
 N = 20;
 BruteForceAverageFrameRate = zeros(length(velocityTargets),numTrials);
 BruteForcePenetrationDistance = zeros(length(velocityTargets),numTrials);
