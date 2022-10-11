@@ -1,9 +1,11 @@
 %% Simple AABB Collision Check
 clc; clear; close all;
 rng(1)
+
 N = 100;
 polygon1 = NPolygon(N,[0;0],0.8);
-polygon2 = NPolygon(N,[1;0]);
+polygon2 = NPolygon(N,[0.9;0.9]);
+figure
 polygon1.plotPolygon();
 polygon2.plotPolygon();
 bvh1 = AABB(polygon1.edges);
@@ -45,7 +47,8 @@ end
 %% Simple AABB Collision Check with square polgyon
 clc; clear; close all;
 rng(1)
-N = 100;
+
+N = 5;
 polygon1 = SimplePolygon(N);
 polygon2 = SimplePolygon(N,[0.8;0]);
 polygon1.plotPolygon();
@@ -72,10 +75,10 @@ tic
 for i = 1:N
     for j = 1:N
         if EdgeIntersectionTest(polygon1.edges(i),polygon2.edges(j))
-%             hold on;
-%             polygon1.markEdge(i,'Color',[0,0.5,0]);
-%             polygon2.markEdge(j,'Color',[0,0,1]);
-%             hold off;
+            hold on;
+            polygon1.markEdge(i,'Color',[0,0.5,0]);
+            polygon2.markEdge(j,'Color',[0,0,1]);
+            hold off;
              total = total+1;
         end
     end
@@ -233,7 +236,7 @@ while ~inCollision && totalTime < abs(100/velocity)
     [inCollision, edges] = BruteForceCollisionDetection(polygon1,polygon2);
 end
 % [inCollision, edges] = BruteForceCollisionDetection(polygon1,polygon2);
-%%
+%% 
 clc;
 velocity = -10;
 N = 10;
