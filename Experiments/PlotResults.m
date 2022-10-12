@@ -1,6 +1,6 @@
-% clc;clear;close all;
+clc;clear;close all;
 version = 3;
-folder = "Results/Square/";
+folder = "Results/Circle/";
 %% Plot Build Results
 loadloc = sprintf("%sBuildAABBResults_v%d",folder,version);
 load(loadloc)
@@ -12,10 +12,10 @@ hold on
 grid on
 plot(numVertices, mean(buildAABBResults,2),'LineWidth',2,'DisplayName',"AABB BVH")
 plot(numVertices, mean(buildRestrictedResults,2),'LineWidth',2,'DisplayName',"Restricted Box BVH")
-legend()
-title("Time to build AABB trees and RestricedBox Trees")
-xlabel("Number of Vertices")
-ylabel("Time (s)")
+legend('FontSize',12)
+title("Time to build bounding volume hiearchies",'FontSize',16)
+xlabel("Number of Vertices",'FontSize',14)
+ylabel("Time (s)",'FontSize',14)
 
 %% Plot Edge-Edge Timing
 try
@@ -46,10 +46,10 @@ grid on
 plot(numVertices, mean(collisionAABBResults,2),'LineWidth',2,'DisplayName',"AABB BVH")
 plot(numVertices, mean(collisionRestrictedResults,2),'LineWidth',2,'DisplayName',"Restricted Box BVH")
 plot(numVertices, mean(collisionBruteForceResults,2),'LineWidth',2,'DisplayName',"Brute Force")
-legend()
-title(sprintf("Time to perform heavy collision detection with\n AABB trees, RestrictedBox Trees, and Brute Force Detection"))
-xlabel("Number of Vertices")
-ylabel("Time (s)")
+legend('FontSize',12)
+title(sprintf("Time to perform heavy collision detection"),'FontSize',16)
+xlabel("Number of Vertices",'FontSize',14)
+ylabel("Time (s)",'FontSize',14)
 
 
 figure
@@ -57,9 +57,9 @@ hold on
 grid on
 
 plot(numVertices,mean(numCollisions,2),'LineWidth',2)
-xlabel("Number of Vertices")
-ylabel("Number of Collisions");
-title("Number of Collisions vs Number of Vertices");
+xlabel("Number of Vertices",'FontSize',14)
+ylabel("Number of Collisions",'FontSize',14);
+title("Number of Collisions vs Number of Vertices",'FontSize',16);
 
 %% Light Collision Timing
 
@@ -83,15 +83,16 @@ grid on
 plot(numVertices, mean(collisionAABBResults,2),'LineWidth',2,'DisplayName',"AABB BVH")
 plot(numVertices, mean(collisionRestrictedResults,2),'LineWidth',2,'DisplayName',"Restricted Box BVH")
 plot(numVertices, mean(collisionBruteForceResults,2),'LineWidth',2,'DisplayName',"Brute Force")
-legend()
-title(sprintf("Time to perform light collision detection with\n AABB trees, RestrictedBox Trees, and Brute Force Detection"))
-xlabel("Number of Vertices")
-ylabel("Time (s)")
+legend('FontSize',12)
+title(sprintf("Time to perform light collision detection"),'FontSize',16)
+xlabel("Number of Vertices",'FontSize',14)
+ylabel("Time (s)",'FontSize',14)
+ylim([0,0.12])
 
 figure
 hold on
 grid on
 plot(numVertices,mean(numCollisions,2),'LineWidth',2)
-xlabel("Number of Vertices")
-ylabel("Number of Collisions");
-title("Number of Collisions vs Number of Vertices");
+xlabel("Number of Vertices",'FontSize',14)
+ylabel("Number of Collisions",'FontSize',14);
+title("Number of Collisions vs Number of Vertices",'FontSize',16);

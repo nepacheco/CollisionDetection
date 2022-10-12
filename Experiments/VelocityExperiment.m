@@ -135,7 +135,7 @@ for i = 1:length(velocityTargets)
             BruteForceCollisionMatrix(i,j) = inCollision;
             frameCount = frameCount+1;
         end
-        RestrictedAverageFrameRate(i,j) = frameCount/totalTime;
+        BruteForceAverageFrameRate(i,j) = frameCount/totalTime;
         distStep = 0.001;
         while inCollision
             BruteForcePenetrationDistance(i,j) = BruteForcePenetrationDistance(i,j) + distStep;
