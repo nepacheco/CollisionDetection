@@ -1,9 +1,12 @@
 %%
 clc;clear; close all;
+addpath('PrimitiveTest')
+figurePosition = [0 0 1 1];
 %% Generating Polygons
 rng(1);
 vertices = [10,40,60];
-figure
+f = figure('WindowState','maximized');
+% f('units','normalized','outerPosition',figurePosition);
 for i = 1:length(vertices)
     subplot(2,3,i)
     hold on
@@ -27,7 +30,8 @@ polygon = NPolygon(N);
 bvh = AABB(polygon.edges);
 
 c = distinguishable_colors(5);
-figure
+f = figure('WindowState','maximized');
+% f('units','normalized','outerPosition',figurePosition)
 title("AABB Tree",'FontSize',16);
 xlabel('X Axis');
 ylabel('Y Axis');
@@ -44,13 +48,14 @@ polygon = NPolygon(N);
 bvh = AABB(polygon.edges,0,false);
 bvh = RestrictedBox.makeTree(bvh);
 
-c = distinguishable_colors(10);
-f = figure;
+c = distinguishable_colors(20);
+f = figure('WindowState','maximized');
+% f.Position(1:4) = [550 300 750 650];
 title("Restricted Box Tree",'FontSize',16);
 xlabel('X Axis');
 ylabel('Y Axis');
 polygon.plotPolygon();
-% movegui(f,[0,550])
+
 RestrictedBox.plotBox(bvh,'Layer',1,'LineWidth',3.5-1*0.5,'Color',c(1,:),'plotEdges',false);
 hold on
 waitforbuttonpress();
@@ -62,7 +67,8 @@ end
 
 %% Collision Example
 rng(1)
-figure
+f = figure('WindowState','maximized');
+% f.Position(1:4) = [550 300 750 650];
 title("Stationary collision test",'FontSize',16);
 xlabel('X Axis');
 ylabel('Y Axis');
@@ -83,12 +89,15 @@ RestrictedBox.plotBox(bvh2,'Layer',1,'Color',[0 0.5 0]);
 waitforbuttonpress();
 tic
 [inCollsion, collisionEdges] = RestrictedCollisionDetection(bvh1,bvh2,bvh1.l,bvh1.h,bvh2.l,bvh2.h);
-toc
+collisionTime = toc;
 hold on
 for edge = collisionEdges
     edge(1).plot('Color',[1 0 0]);
     edge(2).plot('Color',[1 0 0]);
 end
+dim = [.4 0.6 0.5 .3];
+str = sprintf("Collision Detection in %0.4f seconds\n %d Collisions Detected",collisionTime,size(collisionEdges,2));
+annotation('textbox',dim,'String',str,'FitBoxToText','on','FontSize',14);
 waitforbuttonpress();
 %% Motion Test
 velocityTargets = 10:10:50;
@@ -97,19 +106,20 @@ N = 20;
 RestrictedAverageFrameRate = zeros(length(velocityTargets),numTrials);
 RestrictedPenetrationDistance = zeros(length(velocityTargets),numTrials);
 RestrictedCollisionMatrix = zeros(length(velocityTargets),numTrials);
-figure
+
 for i = 1:length(velocityTargets)
     rng(1)
     for j = 1:numTrials
-        close 
-        figure
+        
+        f = figure('WindowState','maximized');
+%         f.Position(1:4) = [550 300 750 650];
         hold on;
         title("Moving Collision test",'FontSize',16);
         xlabel('X Axis');
         ylabel('Y Axis');
         speed = velocityTargets(i);
         polygon1 = NPolygon(N);
-        polygon2 = NPolygon(N,[30;0]);
+        polygon2 = NPolygon(N,[50;0]);
         polygon1.plotPolygon();
         polygon2.plotPolygon();
         bvh1 = AABB(polygon1.edges,0,false);
@@ -121,7 +131,7 @@ for i = 1:length(velocityTargets)
         totalTime = 0;
         frameCount = 0;
         tic;
-        while ~inCollision && totalTime < abs((30+5)/speed)
+        while ~inCollision && totalTime < abs((50+5)/speed)
             timeDiff = toc;
             tic
             dist = timeDiff*(-speed);
