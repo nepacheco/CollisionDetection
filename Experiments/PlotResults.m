@@ -1,6 +1,6 @@
 clc;clear;close all;
 version = 3;
-folder = "Results/Circle/";
+folder = "Results/Square/";
 %% Plot Build Results
 loadloc = sprintf("%sBuildAABBResults_v%d",folder,version);
 load(loadloc)
@@ -13,7 +13,8 @@ grid on
 plot(numVertices, mean(buildAABBResults,2),'LineWidth',2,'DisplayName',"AABB BVH")
 plot(numVertices, mean(buildRestrictedResults,2),'LineWidth',2,'DisplayName',"Restricted Box BVH")
 legend('FontSize',12)
-title("Time to build bounding volume hiearchies",'FontSize',16)
+str = sprintf("Time to build bounding volume \nhierarchies for %s polygons",erase(erase(folder,"Results/"),"/"));
+title(str,'FontSize',16)
 xlabel("Number of Vertices",'FontSize',14)
 ylabel("Time (s)",'FontSize',14)
 
@@ -47,7 +48,8 @@ plot(numVertices, mean(collisionAABBResults,2),'LineWidth',2,'DisplayName',"AABB
 plot(numVertices, mean(collisionRestrictedResults,2),'LineWidth',2,'DisplayName',"Restricted Box BVH")
 plot(numVertices, mean(collisionBruteForceResults,2),'LineWidth',2,'DisplayName',"Brute Force")
 legend('FontSize',12)
-title(sprintf("Time to perform heavy collision detection"),'FontSize',16)
+str = sprintf("Time to perform heavy collision  \ndetection for %s polygons",erase(erase(folder,"Results/"),"/"));
+title(str,'FontSize',16)
 xlabel("Number of Vertices",'FontSize',14)
 ylabel("Time (s)",'FontSize',14)
 
@@ -84,7 +86,8 @@ plot(numVertices, mean(collisionAABBResults,2),'LineWidth',2,'DisplayName',"AABB
 plot(numVertices, mean(collisionRestrictedResults,2),'LineWidth',2,'DisplayName',"Restricted Box BVH")
 plot(numVertices, mean(collisionBruteForceResults,2),'LineWidth',2,'DisplayName',"Brute Force")
 legend('FontSize',12)
-title(sprintf("Time to perform light collision detection"),'FontSize',16)
+str = sprintf("Time to perform light collision  \ndetection for %s polygons",erase(erase(folder,"Results/"),"/"));
+title(str,'FontSize',16)
 xlabel("Number of Vertices",'FontSize',14)
 ylabel("Time (s)",'FontSize',14)
 ylim([0,0.12])
