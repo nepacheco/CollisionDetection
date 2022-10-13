@@ -4,10 +4,10 @@ addpath('PrimitiveTest')
 figurePosition = [0 0 1 1];
 %% Generating Polygons
 rng(1);
-vertices = [10,40,60];
+vertices = [10,40,60]; % vertices to use for polygons
 f = figure('WindowState','maximized');
-% f('units','normalized','outerPosition',figurePosition);
 for i = 1:length(vertices)
+    % for loop to generate circle polygons
     subplot(2,3,i)
     hold on
     polygon = NPolygon(vertices(i));
@@ -16,6 +16,7 @@ for i = 1:length(vertices)
     hold off
 end
 for i = 1:length(vertices)
+    % for loop to generate square polygons
     subplot(2,3,i+3)
     polygon = SimplePolygon(vertices(i));
     polygon.plotPolygon();
@@ -27,16 +28,15 @@ waitforbuttonpress;
 rng(1)
 N = 6;
 polygon = NPolygon(N);
-bvh = AABB(polygon.edges);
-
+bvh = AABB(polygon.edges); % creating AABB bounding volume
 c = distinguishable_colors(5);
 f = figure('WindowState','maximized');
-% f('units','normalized','outerPosition',figurePosition)
 title("AABB Tree",'FontSize',16);
 xlabel('X Axis');
 ylabel('Y Axis');
 polygon.plotPolygon();
 for i = 1:4
+    % plotting each layer of the AABB Tree.
     bvh.plotBox('Layer',i,'LineWidth',3.5-i*0.5,'Color',c(i,:));
     w = waitforbuttonpress();
 end
@@ -45,17 +45,18 @@ end
 rng(1)
 N = 6;
 polygon = NPolygon(N);
+% Two step process for creating restricted box tree
 bvh = AABB(polygon.edges,0,false);
 bvh = RestrictedBox.makeTree(bvh);
 
 c = distinguishable_colors(20);
 f = figure('WindowState','maximized');
-% f.Position(1:4) = [550 300 750 650];
 title("Restricted Box Tree",'FontSize',16);
 xlabel('X Axis');
 ylabel('Y Axis');
 polygon.plotPolygon();
 
+% Plotting each layer of the restricted box tree
 RestrictedBox.plotBox(bvh,'Layer',1,'LineWidth',3.5-1*0.5,'Color',c(1,:),'plotEdges',false);
 hold on
 waitforbuttonpress();
@@ -68,7 +69,6 @@ end
 %% Collision Example
 rng(1)
 f = figure('WindowState','maximized');
-% f.Position(1:4) = [550 300 750 650];
 title("Stationary collision test",'FontSize',16);
 xlabel('X Axis');
 ylabel('Y Axis');
@@ -78,16 +78,18 @@ polygon2 = NPolygon(N,[1;0]);
 polygon1.plotPolygon();
 polygon2.plotPolygon('Color',[0 0.5 0]);
 
+% Create Restricted box tree 1
 bvh1 = AABB(polygon1.edges,0,false);
 bvh1 = RestrictedBox.makeTree(bvh1);
 RestrictedBox.plotBox(bvh1,'Layer',1);
-% RestrictedBox.plotBox(bvh1,'Layer',3,'Color',[1 0 0]);
 
+% Create restricted box tree 2
 bvh2 = AABB(polygon2.edges,0,false);
 bvh2 = RestrictedBox.makeTree(bvh2);
 RestrictedBox.plotBox(bvh2,'Layer',1,'Color',[0 0.5 0]);
 waitforbuttonpress();
 tic
+% run collision detection
 [inCollsion, collisionEdges] = RestrictedCollisionDetection(bvh1,bvh2,bvh1.l,bvh1.h,bvh2.l,bvh2.h);
 collisionTime = toc;
 hold on
@@ -118,12 +120,15 @@ for i = 1:length(velocityTargets)
         xlabel('X Axis');
         ylabel('Y Axis');
         speed = velocityTargets(i);
+        % create two polygons
         polygon1 = NPolygon(N);
         polygon2 = NPolygon(N,[50;0]);
         polygon1.plotPolygon();
         polygon2.plotPolygon();
+        % create restricted box tree 1
         bvh1 = AABB(polygon1.edges,0,false);
         bvh1 = RestrictedBox.makeTree(bvh1);
+        % create restricted box tree 2
         bvh2 = AABB(polygon2.edges,0,false);
         bvh2 = RestrictedBox.makeTree(bvh2);
         inCollision = false;
@@ -132,29 +137,37 @@ for i = 1:length(velocityTargets)
         frameCount = 0;
         tic;
         while ~inCollision && totalTime < abs((50+5)/speed)
-            timeDiff = toc;
+            % while not in collision, and while the objects haven't passed
+            % each other
+            timeDiff = toc; % time difference is time between loops
             tic
-            dist = timeDiff*(-speed);
+            dist = timeDiff*(-speed); % using time difference calc distance traveled
             totalTime = totalTime + timeDiff;
-            polygon2.translate([dist;0],true);
-            bvh2.translateBox([dist;0]);
+            polygon2.translate([dist;0],true); % translate polygon
+            bvh2.translateBox([dist;0]); % translate respective box
             drawnow
+            % perform collision detection
             [inCollision, collisionEdges] = RestrictedCollisionDetection(bvh1,bvh2,bvh1.l,bvh1.h,bvh2.l,bvh2.h);
             RestrictedCollisionMatrix(i,j) = inCollision;
             frameCount = frameCount+1;
         end
+        % paint edges in collision
         for edge = collisionEdges
             edge(1).plot('Color',[1 0 0]);
             edge(2).plot('Color',[1 0 0]);
         end
+        % get average frame rate
         RestrictedAverageFrameRate(i,j) = frameCount/totalTime;
         distStep = 0.001;
+        % this is for figuring out penetration distance
         while inCollision
+            % always increment 0.001 units until no longer in collision
             RestrictedPenetrationDistance(i,j) = RestrictedPenetrationDistance(i,j) + distStep;
             polygon2.translate([distStep;0],false);
             bvh2.translateBox([distStep;0]);
             [inCollision, ~] = RestrictedCollisionDetection(bvh1,bvh2,bvh1.l,bvh1.h,bvh2.l,bvh2.h); 
         end
+        % print labels on figure
         dim = [.4 0.6 0.0 .3];
         str = sprintf("Penetration distance of %0.3f",RestrictedPenetrationDistance(i,j));
         annotation('textbox',dim,'String',str,'FitBoxToText','on','FontSize',14);

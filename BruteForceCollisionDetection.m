@@ -1,6 +1,6 @@
 function [inCollision,edges] = BruteForceCollisionDetection(polygon1,polygon2)
-%BRUTEFORCECOLLISIONDETECTION Summary of this function goes here
-%   Detailed explanation goes here
+%BRUTEFORCECOLLISIONDETECTION Compares each edge in two polygons looking
+%for intersections
 N1 = length(polygon1.edges);
 N2 = length(polygon2.edges);
 inCollision = false;

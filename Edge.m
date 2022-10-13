@@ -1,7 +1,6 @@
 classdef Edge < handle
-    %EDGE Summary of this class goes here
-    %   Detailed explanation goes here
-    
+    %EDGE Class for storing two vertices
+        
     properties
         vertex1 (2,1) double 
         vertex2 (2,1) double 

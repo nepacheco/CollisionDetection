@@ -1,6 +1,5 @@
 classdef RestrictedBox
-    %RESTRICTEDBOX Summary of this class goes here
-    %   Detailed explanation goes here
+    %RESTRICTEDBOX Restricted Box Tree Class
     
     properties
         splitPlaneAxis
@@ -19,7 +18,9 @@ classdef RestrictedBox
                 edges
             end
             %RESTRICTEDBOX Construct an instance of this class
-            %   Detailed explanation goes here
+            %   Simply create an object with the necessary fields filled
+            %   in. For actual construction use the
+            %   RestrictedBox.makeTree() function down below.
             obj.splitPlaneAxis = splitPlaneAxis;
             obj.dir = dir;
             obj.dist = dist;
@@ -28,7 +29,10 @@ classdef RestrictedBox
         end
 
         function obj = translateBox(obj,dist)
-            
+            % this is necessary because of AABB when translating will also
+            % try to translate children, which is not necessary in
+            % Restricted Box Trees. But a root of a Restricted Box Tree is
+            % an AABB tree.
         end
     end
     methods(Static)
@@ -36,11 +40,13 @@ classdef RestrictedBox
             arguments
                 box (1,1) AABB
             end
+            % Recursively make children
             box.children = RestrictedBox.makeChildren(box.edges,box.l,box.h);
         end
         
         function children = makeChildren(edges,l,h)
-            % MAKECHILDREN - make children out of the current edges
+            % MAKECHILDREN - make children out of the current edges and
+            % corners
             arguments
                 edges (1,:) Edge
                 l (2,1) double 
@@ -49,21 +55,24 @@ classdef RestrictedBox
             planes = [1 0; 0 1]; % x axis and y axis for splitting plane
             childrenDirection = [1 1;-1 -1; 1 -1];% upper children; lower children; upper child and lower child
 %             childrenDirection  = [1 -1]; 
+            % these are parameters used to store the final results
             minVolume = Inf;
             splittingAxis = [0;0];
             childDir = [0 0];
             dist = [0,0];
             edgeList1 = [];
             edgeList2 = [];
-            for i = 1:length(planes)
+            for i = 1:length(planes) % check both x and y plane
                 axis = planes(:,i);
-                for j = 1:size(childrenDirection,1)
+                for j = 1:size(childrenDirection,1) % check combination of upper and lower children
                     dir = childrenDirection(j,:);
+                    % Get the seed for creating the two children
                     [seed1, seed2, tedges] = RestrictedBox.getSeeds(edges,dir,axis);
+                    % Create the two children
                     [volumeTotal,edgeList1_,edgeList2_,corners] = RestrictedBox.createVolumes(tedges,seed1,seed2,axis);
                     tdist = [0,0];
                     volumeTotal = 0;
-                    for k = 1:2
+                    for k = 1:2 % There are two children loop twice
                         if dir(k) > 0  % set distance based on upper child
                             % if upper child we adjust l corner
                             tdist(k) = dot(corners(:,1,k),axis) - dot(l,axis);
@@ -78,6 +87,7 @@ classdef RestrictedBox
                     end
                      
                     if volumeTotal < minVolume
+                        % we found a new lowest volume so update parameters
                         dist = tdist;
                         minVolume = volumeTotal;
                         edgeList1 = edgeList1_;
@@ -89,7 +99,7 @@ classdef RestrictedBox
             end
             % Child 1
             child1 = RestrictedBox(splittingAxis,childDir(1),dist(1),edgeList1);
-            if length(edgeList1) > 1
+            if length(edgeList1) > 1 % we have more than 1 edge so we need to create children
                 if childDir(1) >  0 % upper child
                     child1.children = RestrictedBox.makeChildren(edgeList1,l + splittingAxis*dist(1),h);
                 else % lower chlid
@@ -98,7 +108,7 @@ classdef RestrictedBox
             end
             % Child 2
             child2 = RestrictedBox(splittingAxis,childDir(2),dist(2),edgeList2);
-            if length(edgeList2) > 1
+            if length(edgeList2) > 1 % we have more than 1 edge so we need to create children
                 if childDir(2) >  0 % upper child
                     child2.children = RestrictedBox.makeChildren(edgeList2,l + splittingAxis*dist(2),h);
                 else % lower chlid
@@ -110,9 +120,10 @@ classdef RestrictedBox
         end
         
         function [seed1, seed2, edges] = getSeeds(edges,dir,axis)
-            seedPos1 = dot(axis,(edges(1).vertex1 + edges(2).vertex2)/2); %*dir(1);
+            % initialize both seeds with the first two edges
+            seedPos1 = dot(axis,(edges(1).vertex1 + edges(2).vertex2)/2);
             seed1 = edges(1);
-            seedPos2 = dot(axis,(edges(2).vertex1 + edges(2).vertex2)/2); %*dir(2);
+            seedPos2 = dot(axis,(edges(2).vertex1 + edges(2).vertex2)/2); 
             seed2 = edges(2);
             if seedPos2*dir(1) > seedPos1*dir(1)  % Necessary to check when we only have 2 edges 
                 % this just lets us swap the two seeds off the bat since we
@@ -124,9 +135,12 @@ classdef RestrictedBox
                 seed2 = tEdge;
                 seedPos2 = tPos;
             end
-            for edge = edges(3:end)
-                edgePos = dot(axis,(edge.vertex1 + edge.vertex2)/2);
-                if edgePos*dir(1) > seedPos1*dir(1) % modify based on lower or upper child
+            for edge = edges(3:end) % for the remaining edges
+                edgePos = dot(axis,(edge.vertex1 + edge.vertex2)/2); % get edge pos
+                % for each edge we want to see if it is farther away from
+                % either our first splitting plane or second splitting
+                % plane.
+                if edgePos*dir(1) > seedPos1*dir(1) % modify based on lower or upper child with dir(1)
                     if seedPos1*dir(2) > seedPos2*dir(2)  
                         % Since anytime a somethign becomes a seed1, it
                         % doesn't get checked for seed2, if seed1 gets
@@ -135,19 +149,23 @@ classdef RestrictedBox
                         seed2 = seed1;
                         seedPos2 = seedPos1;
                     end
+                    % update seed 1
                     seed1 = edge;
                     seedPos1 = edgePos;
                     continue
                 end
-                if edgePos*dir(2) > seedPos2*dir(2)  % modify based on lower or upper child
+                if edgePos*dir(2) > seedPos2*dir(2)  % modify based on lower or upper child with dir(2)
+                    % update seed 2
                     seed2 = edge;
                     seedPos2 = edgePos;
                     continue
                 end
             end
-%             edges = edges((edges~=seed1)&(edges~=seed));
             remIndex = [0,0];
             remCount = 1;
+            % This lets us remove the two seeds from the edge list so that
+            % when we build the volumes the two seeds aren't considered
+            % twice.
             for i = 1:length(edges)
                 if edges(i) == seed1 || edges(i) == seed2
                     remIndex(remCount) = i;
@@ -166,8 +184,6 @@ classdef RestrictedBox
             l2 = min(seed2.vertex1,seed2.vertex2); % lower corner box 2
             h2 = max(seed2.vertex1,seed2.vertex2); % upper corner box 2
             for edge = edges  % loop through edges
-%                 volume1 = RestrictedBox.getVolume(edgeList1);
-%                 volume2 = RestrictedBox.getVolume(edgeList2);
                 % instead of figuring out the entire volume, just see which
                 % edge set extends the most along the axis chosen for
                 % separation. The distance is found by dotting the axis
@@ -221,6 +237,8 @@ classdef RestrictedBox
         end
         
         function [l, h] = updateCorner(l,h,box)
+            %UPDATECORNER - just updates the corner of the box using the
+            %splitting plane and type of child
             arguments
                 l (2,1) double
                 h (2,1) double
@@ -234,6 +252,8 @@ classdef RestrictedBox
         end
         
         function plotBox(box,options)
+            % PLOTBOX - Determines which layer to plot when plotting a box
+            % tree.
             arguments
                 box (1,1) AABB
                 options.layer (1,1) double = 1;
@@ -253,6 +273,7 @@ classdef RestrictedBox
         end
         
         function plotLayer(box,l,h,layer,options)
+            %PLOTLAYER - used for plotting a specific layer in a box tree.
             arguments
                 box (1,1) RestrictedBox
                 l 

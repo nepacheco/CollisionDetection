@@ -22,13 +22,9 @@ classdef NPolygon < handle
             obj.pos = pos;
             angleStep = 2*pi/N;
             for i = 1:N
-                if random
-                    vertexAngle = (i-1)*angleStep + rand()*angleStep;
-                    vertexMag = rand()*random + (1-random);
-                else
-                    vertexAngle = (i-1)*angleStep;
-                    vertexMag = 1;
-                end
+                % generate N random vertices and magnitudes
+                vertexAngle = (i-1)*angleStep + rand()*angleStep;
+                vertexMag = rand()*random + (1-random);
                 obj.vertices(:,i) = pos + [cos(vertexAngle) -sin(vertexAngle); sin(vertexAngle) cos(vertexAngle)]*[vertexMag;0];
             end
             for i = 1:N
@@ -71,8 +67,8 @@ classdef NPolygon < handle
         end
         
         function updatePlot(obj,options)
-            %plotPolygon Plots the Polygon
-            %   Detailed explanation goes here
+            %plotPolygon Updates the polygon without creating a new figure
+            %window. Allows for fast plotting.
             arguments
                 obj
                 options.Color (1,3) double = [0 0 1];

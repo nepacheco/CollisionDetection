@@ -1,4 +1,6 @@
 function [inCollision, edges] = AABBCollisionDetection(bvh1,bvh2)
+    %AABBCollisionDetection - Perform collision detection between two AABB
+    %trees
     inCollision = false;
     edges = [];
     leaf1 = length(bvh1.edges) == 1; % The first BVH is a leaf
@@ -29,6 +31,7 @@ function [inCollision, edges] = AABBCollisionDetection(bvh1,bvh2)
             end
         end
     else
+        % both are leaf nodes so perform edge intersection
         inCollision = EdgeIntersectionTest(bvh1.edges(1),bvh2.edges(1));
         if inCollision
             edges = [bvh1.edges;bvh2.edges];

@@ -7,9 +7,10 @@ edges = [];
 leaf1 = length(bvh1.edges) == 1; % The first BVH is a leaf
 leaf2 = length(bvh2.edges) == 1; % The second BVH is leaf
 if ~(leaf1 && leaf2) % at least one of the BVH is not a leaf
+    % Check for collision in the x and y direction. 
     x_collision = (l1(1) < h2(1)) && (l2(1) < h1(1));
     y_collision = (l1(2) < h2(2)) && (l2(2) < h1(2));
-    if ~(x_collision && y_collision)
+    if ~(x_collision && y_collision) % if x and y aren't both in collision then we don't have a collision
         return
     else
         if leaf1 % BVH 1 is a leaf, and BVH 2 is a regular node
